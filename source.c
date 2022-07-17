@@ -6,7 +6,9 @@
 #include <sys/socket.h>
 #include <strings.h>
 #include <unistd.h>
-#define SERVER_PORT 5060
+#include <stdlib.h>
+
+
 
 int main(int argc, char *argv[])
 {
@@ -23,9 +25,13 @@ int main(int argc, char *argv[])
     socket_fd = socket(AF_INET, SOCK_DGRAM, 0); // open the socket
     bzero((char *)&dest, sizeof(dest));         // set all the socket structures with null values
     hostptr = gethostbyname(argv[1]); // hold host name given as an argument from console
+    //get port number p from console
+    char * portnumptr = argv[2];
+    int port = strtol(portnumptr, NULL, 10);
+  
     dest.sin_family = (short)AF_INET;
     bcopy(hostptr->h_addr, (char *)&dest.sin_addr, hostptr->h_length); 
-    dest.sin_port = htons(SERVER_PORT); // translating a short number from host byte order to network byte order
+    dest.sin_port = htons(port); // translating a short number from host byte order to network byte order
     int num = 0;
     for (;;)
     {

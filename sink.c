@@ -8,8 +8,8 @@
 #include <strings.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-#define SERVER_PORT 5060
 
 void printsin(struct sockaddr_in *s, char *str1, char *str2) {
   printf("%s\n", str1);
@@ -30,10 +30,13 @@ int main(int argc, char *argv[])
 
   bzero((char *) &s_in, sizeof(s_in));  // set all the socket structures with null values
 
-
+  //get port number p from console
+  char * portnumptr = argv[1];
+  int port = strtol(portnumptr, NULL, 10);
+  printf("%d",port);
   s_in.sin_family = (short)AF_INET;
   s_in.sin_addr.s_addr = htonl(INADDR_ANY); 
-  s_in.sin_port = htons(SERVER_PORT+1); 
+  s_in.sin_port = htons(port+1); 
   printsin( &s_in, "RECV_UDP", "Local socket is:"); 
   fflush(stdout);//immediately flush out(e.g write to console) the contents of stdout.
 

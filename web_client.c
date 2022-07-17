@@ -91,13 +91,13 @@ int main(int argc, char *argv[])
 
     char request_holder[LINE_SIZE];
     sprintf(request_holder, "GET %s HTTP/1.0\r\nHOST: %s\r\n\r\n" , urllink , hostname);
-    u_long  size_to_send = strlen(request_holder);
+    u_long size_to_send = strlen(request_holder);
 
     char recv_holder[LINE_SIZE];
     char * wo_indents;
     size_t bytes = 0;
     int sent = 0;
-    if (write(sock, request_holder, size_to_send))
+    if (write(sock, request_holder, size_to_send)>0)
     {
         // Read the response
         while ((bytes = read(sock, recv_holder, LINE_SIZE)) > 0) 
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
             {
                 printf("fputs() error\n");
             }
-
+            //print without indents what we receivd from website
             wo_indents = strstr(recv_holder, "\r\n\r\n");
             printf("%s" , wo_indents);
         }          

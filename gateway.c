@@ -11,7 +11,6 @@
 #include <time.h>
 #include <stdlib.h>
 
-#define SERVER_PORT 5060
 
 void printsin(struct sockaddr_in *s, char *str1, char *str2)
 {
@@ -37,9 +36,13 @@ int main(int argc, char *argv[])
 
     bzero((char *)&s_in, sizeof(s_in)); // set all the socket structures with null values
 
+    //get port number p from console
+    char * portnumptr = argv[2];
+    int port = strtol(portnumptr, NULL, 10);
+
     s_in.sin_family = (short)AF_INET;
     s_in.sin_addr.s_addr = htonl(INADDR_ANY); // translating a long integer from host byte order to network byte order
-    s_in.sin_port = htons(SERVER_PORT);       // network byte order 
+    s_in.sin_port = htons(port);       // network byte order 
     printsin(&s_in, "RECV_UDP", "Local socket is:");
     fflush(stdout); 
     bind(socket_fd, (struct sockaddr *)&s_in, sizeof(s_in)); // binding the socket to the adress,
@@ -61,7 +64,7 @@ int main(int argc, char *argv[])
     hostptr = gethostbyname(argv[1]); // hold host name given as an argument from console
     dest.sin_family = (short)AF_INET;
     bcopy(hostptr->h_addr, (char *)&dest.sin_addr, hostptr->h_length); 
-    dest.sin_port = htons(SERVER_PORT + 1); // sending on port number +1 then port we received
+    dest.sin_port = htons(port + 1); // sending on port number +1 then port we received
 
     srand(time(0));
     for (;;)
