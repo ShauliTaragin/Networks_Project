@@ -10,9 +10,8 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
-
+#define LINE_SIZE 600
 #define SIM_LENGTH 10
-#define PORT 9999
 
 int main(int argc, char *argv[])
 {
@@ -32,14 +31,13 @@ int main(int argc, char *argv[])
     }
 
     urllink = argv[1];
-
-    int port;
+    //initialize port default value to 80 (if we get a port from console this will change)
+    int port=80;
     char hostname[100];
-    char page[200];
-    sscanf(urllink, "http://%99[^:]:%99d/%99[^\n]", hostname, &port, page);
+    char dummy_holdurl[LINE_SIZE];
+    sscanf(urllink, "http://%99[^:/]:%99d/%99[^\n]", hostname, &port, dummy_holdurl);
     printf("ip = \"%s\"\n", hostname);
     printf("port = \"%d\"\n", port);
-    printf("page = \"%s\"\n", page);
 
 
 
@@ -90,45 +88,31 @@ int main(int argc, char *argv[])
     size_of_request += strlen("GET %s HTTP/1.0\r\n");
     size_of_request += strlen("HOST: %s\r\n");
     size_of_request += strlen("\r\n");
-    char* request_holder = (char*)malloc(size_of_request);
-    sprintf(request_holder, "GET %s HTTP/1.0\r\nHOST: %s\r\n" , page , hostname);
-    strcat(request_holder,"\r\n");
+
+    char request_holder[LINE_SIZE];
+    sprintf(request_holder, "GET %s HTTP/1.0\r\nHOST: %s\r\n\r\n" , urllink , hostname);
     u_long  size_to_send = strlen(request_holder);
 
-    ssize_t bytes = 0;
+    char recv_holder[LINE_SIZE];
+    char * wo_indents;
+    size_t bytes = 0;
     int sent = 0;
-    do {
-        bytes = write(sock, request_holder + sent, size_to_send - sent);
-        if (bytes < 0) {
-            perror("Error writing message to socket");
-        }
-        if (bytes == 0) {
-            printf("Writing all data is successful!\n");
-            break;
-        }
-        sent += bytes;
-    } while (sent < size_to_send);
+    if (write(sock, request_holder, size_to_send))
+    {
+        // Read the response
+        while ((bytes = read(sock, recv_holder, LINE_SIZE)) > 0) 
+        {
+            recv_holder[bytes] = '\0';
 
+            if(fputs(recv_holder, stdout) == EOF)
+            {
+                printf("fputs() error\n");
+            }
 
-    char buffer[4000];
-    ssize_t bytes_r = 0;
-    int recv = 0;
-    memset(buffer , 0 , sizeof(buffer));
-    int zero_buf = sizeof(buffer)-1;
-    do {
-        bytes_r = read(sock, buffer + recv, zero_buf - recv);
-        fprintf(stdout,"%s\n",buffer);
-        fflush(stdout);
-        if (bytes_r < 0) {
-            perror("Error reading message from socket");
-        }
-        if (bytes_r == 0) {
-            printf("Writing all data is successful!\n");
-            break;
-        }
-        recv += bytes_r;
-    } while (recv < zero_buf);
-    free(request_holder);
+            wo_indents = strstr(recv_holder, "\r\n\r\n");
+            printf("%s" , wo_indents);
+        }          
+    }
     printf("Exiting now.\n");
 
     close(sock); // close socket
