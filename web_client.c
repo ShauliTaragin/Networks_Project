@@ -36,8 +36,8 @@ int main(int argc, char *argv[])
     char hostname[100];
     char dummy_holdurl[LINE_SIZE];
     sscanf(urllink, "http://%99[^:/]:%99d/%99[^\n]", hostname, &port, dummy_holdurl);
-    printf("ip = \"%s\"\n", hostname);
-    printf("port = \"%d\"\n", port);
+    printf("ip from url is: \"%s\"\n", hostname);
+    printf("port is: \"%d\"\n", port);
 
 
 

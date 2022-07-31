@@ -12,13 +12,10 @@
 #include <stdlib.h>
 
 
-void printsin(struct sockaddr_in *s, char *str1, char *str2)
-{
-    printf("%s\n", str1);
-    printf("%s: ", str2);
-    char adress[INET_ADDRSTRLEN];
-    inet_ntop(AF_INET, &(s->sin_addr), adress, INET_ADDRSTRLEN);
-    printf("ip= %s , port= %d\n", adress, s->sin_port);
+void printsin(struct sockaddr_in *s, char *str1, char *str2) {
+  printf("%s\n", str1);
+  printf("%s: ", str2);
+  printf("ip= %s, port= %d", inet_ntoa(s->sin_addr), s->sin_port);
 }
 
 int main(int argc, char *argv[])

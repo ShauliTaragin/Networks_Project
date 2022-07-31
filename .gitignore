@@ -1,7 +1,3 @@
-recv
-sink
-src
-gtw
 .idea/
 cmake-build-debug/
-send
+a.out
